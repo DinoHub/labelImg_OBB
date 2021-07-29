@@ -135,8 +135,9 @@ class Canvas(QWidget):
                     # Clip the coordinates to 0 or max,
                     # if they are outside the range [0, max]
                     size = self.pixmap.size()
-                    clipped_x = min(max(0, pos.x()), size.width())
-                    clipped_y = min(max(0, pos.y()), size.height())
+                    # added leeway of 0.000001 due to bug on floating numbers
+                    clipped_x = min(max(0, pos.x()), size.width() - 0.000001)
+                    clipped_y = min(max(0, pos.y()), size.height() - 0.000001)
                     pos = QPointF(clipped_x, clipped_y)
                 elif len(self.current) > 1 and self.closeEnough(pos, self.current[0]):
                     # Attract line to starting point and colorise to alert the
@@ -450,8 +451,6 @@ class Canvas(QWidget):
     def rotateVertex(self, pos):
         index, shape = self.hVertex, self.hShape
         point = shape[index]
-        if self.outOfPixmap(pos):
-            pos = self.intersectionPoint(point, pos)
 
         if not self.drawSquare:
             angle_target =   math.atan2(pos.y()  -shape.origin[1], pos.x()  -shape.origin[0])
@@ -461,8 +460,6 @@ class Canvas(QWidget):
     def rotateVertexAll(self, pos):
         index, shape = self.hVertex, self.hShape
         point = shape[index]
-        if self.outOfPixmap(pos):
-            pos = self.intersectionPoint(point, pos)
 
         if not self.drawSquare:
             angle_target =   math.atan2(pos.y()  -shape.origin[1], pos.x()  -shape.origin[0])
@@ -620,7 +617,7 @@ class Canvas(QWidget):
 
     def outOfPixmap(self, p):
         w, h = self.pixmap.width(), self.pixmap.height()
-        return not (0 <= p.x() <= w and 0 <= p.y() <= h)
+        return not (0 <= p.x() < w and 0 <= p.y() < h)
 
     def finalise(self):
         assert self.current

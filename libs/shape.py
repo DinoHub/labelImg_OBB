@@ -195,6 +195,16 @@ class Shape(object):
         self.points = [p + offset for p in self.points]
         self.updateOBBInfo()
 
+    def moveByWithinCanvas(self, offset, pixmap_width, pixmap_height):
+        toMove = True
+        for p in self.points:
+            targetPoint = p + offset
+            if targetPoint.x() > pixmap_width or targetPoint.y() > pixmap_height or targetPoint.x() < 0 or targetPoint.y() < 0:
+                toMove = False
+                break
+        if toMove:
+            self.moveBy(offset)
+
     def moveVertexBy(self, i, offset):
         self.points[i] = self.points[i] + offset
         self.updateOBBInfo()

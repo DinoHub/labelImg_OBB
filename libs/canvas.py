@@ -135,8 +135,9 @@ class Canvas(QWidget):
                     # Clip the coordinates to 0 or max,
                     # if they are outside the range [0, max]
                     size = self.pixmap.size()
-                    clipped_x = min(max(0, pos.x()), size.width())
-                    clipped_y = min(max(0, pos.y()), size.height())
+                    # added leeway of 0.000001 due to bug on floating numbers
+                    clipped_x = min(max(0, pos.x()), size.width() - 0.000001)
+                    clipped_y = min(max(0, pos.y()), size.height() - 0.000001)
                     pos = QPointF(clipped_x, clipped_y)
                 elif len(self.current) > 1 and self.closeEnough(pos, self.current[0]):
                     # Attract line to starting point and colorise to alert the
@@ -450,8 +451,6 @@ class Canvas(QWidget):
     def rotateVertex(self, pos):
         index, shape = self.hVertex, self.hShape
         point = shape[index]
-        if self.outOfPixmap(pos):
-            pos = self.intersectionPoint(point, pos)
 
         if not self.drawSquare:
             angle_target =   math.atan2(pos.y()  -shape.origin[1], pos.x()  -shape.origin[0])
@@ -461,8 +460,6 @@ class Canvas(QWidget):
     def rotateVertexAll(self, pos):
         index, shape = self.hVertex, self.hShape
         point = shape[index]
-        if self.outOfPixmap(pos):
-            pos = self.intersectionPoint(point, pos)
 
         if not self.drawSquare:
             angle_target =   math.atan2(pos.y()  -shape.origin[1], pos.x()  -shape.origin[0])
@@ -478,8 +475,8 @@ class Canvas(QWidget):
             pos -= QPointF(min(0, o1.x()), min(0, o1.y()))
         o2 = pos + self.offsets[1]
         if self.outOfPixmap(o2):
-            pos += QPointF(min(0, self.pixmap.width() - o2.x()),
-                           min(0, self.pixmap.height() - o2.y()))
+            pos += QPointF(min(0, self.pixmap.width() - 0.000001 - o2.x()),
+                           min(0, self.pixmap.height() - 0.000001 - o2.y()))
         # The next line tracks the new position of the cursor
         # relative to the shape, but also results in making it
         # a bit "shaky" when nearing the border and allows it to
@@ -500,8 +497,8 @@ class Canvas(QWidget):
             pos -= QPointF(min(0, o1.x()), min(0, o1.y()))
         o2 = pos + self.offsets[1]
         if self.outOfPixmap(o2):
-            pos += QPointF(min(0, self.pixmap.width() - o2.x()),
-                           min(0, self.pixmap.height() - o2.y()))
+            pos += QPointF(min(0, self.pixmap.width() - 0.000001 - o2.x()),
+                           min(0, self.pixmap.height() - 0.000001 - o2.y()))
         # The next line tracks the new position of the cursor
         # relative to the shape, but also results in making it
         # a bit "shaky" when nearing the border and allows it to
@@ -510,7 +507,7 @@ class Canvas(QWidget):
         dp = pos - self.prevPoint
         if dp:
             for s in self.shapes:
-                s.moveBy(dp)
+                s.moveByWithinCanvas(dp, self.pixmap.width(), self.pixmap.height())
             self.prevPoint = pos
             return True
         return False
@@ -620,7 +617,7 @@ class Canvas(QWidget):
 
     def outOfPixmap(self, p):
         w, h = self.pixmap.width(), self.pixmap.height()
-        return not (0 <= p.x() <= w and 0 <= p.y() <= h)
+        return not (0 <= p.x() < w and 0 <= p.y() < h)
 
     def finalise(self):
         assert self.current
@@ -714,7 +711,7 @@ class Canvas(QWidget):
 
         if move_all:
             for shape in self.shapes:
-                shape.moveBy(movement)
+                shape.moveByWithinCanvas(movement, self.pixmap.width(), self.pixmap.height())
         else:
             self.selectedShape.moveBy(movement)
 

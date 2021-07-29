@@ -507,7 +507,7 @@ class Canvas(QWidget):
         dp = pos - self.prevPoint
         if dp:
             for s in self.shapes:
-                s.moveBy(dp)
+                s.moveByWithinCanvas(dp, self.pixmap.width(), self.pixmap.height())
             self.prevPoint = pos
             return True
         return False
@@ -711,7 +711,7 @@ class Canvas(QWidget):
 
         if move_all:
             for shape in self.shapes:
-                shape.moveBy(movement)
+                shape.moveByWithinCanvas(movement, self.pixmap.width(), self.pixmap.height())
         else:
             self.selectedShape.moveBy(movement)
 

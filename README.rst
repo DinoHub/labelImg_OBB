@@ -247,9 +247,8 @@ Exporting to Windows
 
 To export program as a .exe program:
 
-1. Run `pyinstaller labelimg.py` and look into the `/dist/labelimg`. All the files are 
-
-2. You can also run `pyinstaller --onefile labelimg.py` to just get a single .exe file in `/dist` instead
+1. Run `pyinstaller --onefile labelimg.py` to just get a single .exe file in `/dist` 
+2. Add the `predefined_classes.txt` file into the same folder as where you would run your .exe if needed
 
 How to contribute
 ~~~~~~~~~~~~~~~~~

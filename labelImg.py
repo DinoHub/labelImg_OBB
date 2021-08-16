@@ -1685,9 +1685,16 @@ def get_main_app(argv=[]):
     app.setWindowIcon(newIcon("app"))
     # Tzutalin 201705+: Accept extra agruments to change predefined class file
     argparser = argparse.ArgumentParser()
+    
+    # check running .py directly or as .exe in windows
+    if getattr(sys, 'frozen', False):
+        classes_path = os.path.join(os.path.dirname(sys.executable), "predefined_classes.txt")
+    else:
+        classes_path = os.path.join(os.path.dirname(__file__), "data", "predefined_classes.txt")
+
     argparser.add_argument("image_dir", nargs="?")
     argparser.add_argument("predefined_classes_file",
-                           default=os.path.join(".", "predefined_classes.txt"),
+                           default=classes_path,
                            nargs="?")
     argparser.add_argument("save_dir", nargs="?")
     args = argparser.parse_args(argv[1:])

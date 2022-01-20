@@ -1,6 +1,7 @@
 import cv2
 import os
 import argparse
+import sys
 
 def get_frame_from_video(video, output_dir, images_per_sec=1):
     video_name = os.path.splitext(os.path.split(video)[-1])[0]
@@ -48,10 +49,20 @@ if __name__ == "__main__":
     parser.add_argument('--force_render', default=False, help='Convert all videos in path to frames')
     args = parser.parse_args()
 
-    video_input = os.getenv('raw_video')
-    output_dir = os.getenv('offline_annotation_repo')
+    # pyinstaller
+    if getattr(sys, 'frozen', False):
+        video_input = os.path.join(os.path.dirname(sys.executable), "video_input")
+        output_dir = video_input.replace("video_input", "video_output")
+    else:
+        video_input = os.path.join(os.path.dirname(__file__), "video_input")
+        output_dir = video_input.replace("video_input", "video_output")
 
-    assert video_input != None, "Please set env var at /etc/environment"
-    assert output_dir != None, "Please set env var at /etc/environment"
+    os.makedirs(output_dir, exist_ok=True)
+    # linux env
+    # video_input = os.getenv('raw_video')
+    # output_dir = os.getenv('offline_annotation_repo')
+
+    # assert video_input != None, "Please set env var at /etc/environment"
+    # assert output_dir != None, "Please set env var at /etc/environment"
     
     get_frame_from_path(video_input, output_dir, images_per_sec=args.img_per_sec)

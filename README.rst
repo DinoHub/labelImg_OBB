@@ -249,6 +249,10 @@ To export program as a .exe program:
 
 1. Run `pyinstaller --onefile labelimg.py` to just get a single .exe file in `/dist` 
 2. Add the `predefined_classes.txt` file into the same folder as where you would run your .exe if needed
+3. `cd video2frame`
+4. Run `pyinstaller --onefile video_to_frames.py` to just get a single.exe file in `dist`
+5. Add a folder called 'video_input' into the same folder as where you would run your .exe and put in all the videos by folder (videoA, videoB).
+6. Run video_to_frames.exe will churns out 'video_output'.
 
 How to contribute
 ~~~~~~~~~~~~~~~~~

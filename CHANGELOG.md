@@ -1,5 +1,6 @@
 
 ## Change log
+[Add in exe for video2frame](https://github.com/jinmingteo/labelImg_OBB/commit/ed1414b8ca4ffce5b30c0a3749cdbbbab4aec021)
 
 [Mass rotate/move BBS](https://github.com/jinmingteo/labelImg_OBB/commit/ac4f5026181d758d461c182279d1c02f568b56b7)
 
